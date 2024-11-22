@@ -6,7 +6,7 @@ from matplotlib import rcParams
 from matplotlib import font_manager as fm
 
 # 设置字体路径，根目录下
-font_path = "SimHei.ttf"
+font_path = "/SimHei.ttf"
 font_prop = fm.FontProperties(fname=font_path)
 # 应用字体设置
 rcParams['font.sans-serif'] = [font_prop.get_name()]
