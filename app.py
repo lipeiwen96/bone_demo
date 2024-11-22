@@ -1,3 +1,5 @@
+import os.path
+
 import streamlit as st
 import json
 from ai_analysis import ai_analysis
@@ -6,12 +8,9 @@ from matplotlib import rcParams
 from matplotlib import font_manager as fm
 
 # 设置字体路径，根目录下
-font_path = "SimHei.ttf"
-font_prop = fm.FontProperties(fname=font_path)
-
-
+font_path = os.path.abspath(os.path.join("fonts", "SimHei.ttf"))
 # 应用字体设置
-rcParams['font.sans-serif'] = [font_prop.get_name()]
+rcParams['font.sans-serif'] = [font_path]
 rcParams['axes.unicode_minus'] = False  # 解决负号显示问题
 
 # # 设置字体路径，根目录下
