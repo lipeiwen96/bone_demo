@@ -4,8 +4,10 @@ from ai_analysis import ai_analysis
 import matplotlib.pyplot as plt
 from matplotlib import rcParams
 
-# 设置字体路径
-rcParams['font.sans-serif'] = ['Microsoft YaHei']  # 替换为其他中文字体
+# 设置字体路径，根目录下
+font_path = "/SimHei.ttf"
+# 配置 Matplotlib 使用该字体
+rcParams['font.sans-serif'] = [font_path]  # 加载字体路径
 rcParams['axes.unicode_minus'] = False  # 解决负号显示问题
 
 
