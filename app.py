@@ -3,9 +3,11 @@ import json
 from ai_analysis import ai_analysis
 import matplotlib.pyplot as plt
 from matplotlib import rcParams
+import os
 
-# 设置字体解决中文乱码问题
-rcParams['font.sans-serif'] = ['SimHei']  # 适用于 Windows 的字体
+# 设置字体路径
+font_path = os.path.join("fonts", "SimHei.ttf")  # 确保字体文件在项目根目录的 fonts 文件夹内
+rcParams['font.sans-serif'] = [font_path]  # 设置字体路径
 rcParams['axes.unicode_minus'] = False  # 解决负号显示问题
 
 
