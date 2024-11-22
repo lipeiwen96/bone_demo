@@ -9,36 +9,6 @@ from matplotlib import font_manager as fm
 import requests
 
 
-def setup_font():
-    font_dir = "/usr/share/fonts/custom"
-    font_file = "SimHei.ttf"
-    font_url = "https://github.com/vinta/pangu/raw/master/tests/fonts/SimHei.ttf"
-
-    # 创建字体目录
-    if not os.path.exists(font_dir):
-        print(f"创建字体目录: {font_dir}")
-        os.makedirs(font_dir)
-
-    # 下载字体文件
-    font_path = os.path.join(font_dir, font_file)
-    if not os.path.exists(font_path):
-        print("下载 SimHei.ttf 字体文件...")
-        response = requests.get(font_url)
-        with open(font_path, "wb") as f:
-            f.write(response.content)
-        print("字体文件下载完成！")
-    else:
-        print("字体文件已存在！")
-
-    # 更新字体缓存
-    os.system("fc-cache -fv")
-    return font_path
-
-# 调用字体安装
-font_path = setup_font()
-
-# 配置 Matplotlib
-rcParams['font.sans-serif'] = [font_path]
 rcParams['axes.unicode_minus'] = False
 
 # # 设置字体路径，根目录下
@@ -87,7 +57,7 @@ def plot_indicator_with_ticks(min_value, max_value, standard_range, current_rang
         x2=standard_range[1],
         color="yellow",
         alpha=0.5,
-        label=f"参考正常范围: {standard_range[0]} - {standard_range[1]}",
+        label=f"Reference Normal Range: {standard_range[0]} - {standard_range[1]}",
     )
 
     # 绘制当前指标所处的区间（浅红色虚线框，不填充）
@@ -113,7 +83,7 @@ def plot_indicator_with_ticks(min_value, max_value, standard_range, current_rang
         linestyle="--",
         alpha=0.5,
         linewidth=1,
-        label=f"{range_name}区间: {current_range[0]} - {current_range[1]}",
+        label=f"Current Range: {current_range[0]} - {current_range[1]}",
     )
 
     # 绘制当前指标值（红色标识）
@@ -123,7 +93,7 @@ def plot_indicator_with_ticks(min_value, max_value, standard_range, current_rang
         color="red",
         marker="v",  # 倒三角形
         markersize=5,
-        label=f"当前值: {current_value}",
+        label=f"Current Value: {current_value}",
     )
 
     # 设置横轴刻度（去除重复刻度）
