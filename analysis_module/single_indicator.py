@@ -24,6 +24,11 @@ class SingleIndicator:
 
     reference_age_range: str = field(default="")  # 符合的年龄参考区间
     reference_value_range: str = field(default="")
+    reference_value_range_min: float = field(default=float)
+    reference_value_range_max: float = field(default=float)
+    # use_reference_value_range: bool = field(default=True)
+    standard_value_range_min: float = field(default=float)
+    standard_value_range_max: float = field(default=float)
 
     @property
     def log(self):
@@ -43,6 +48,11 @@ class SingleIndicator:
                 "用药建议": self.medication_suggestion,
                 "参考文件": self.guideline,
                 "是否异常": self.is_abnormal,
+                "单位": self.unit,
+                "当前数值": self.value,
+                "当前区间范围数值": (self.reference_value_range_min, self.reference_value_range_max),
+                "正常区间范围数值": (self.standard_value_range_min, self.standard_value_range_max),
+                "当前区间名称": self.range
             }
         else:
             return {

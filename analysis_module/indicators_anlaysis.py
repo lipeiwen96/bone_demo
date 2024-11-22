@@ -26,20 +26,43 @@ class IndicatorsAnalysis:
             self.is_male = False
 
     def init(self):
+        all_ranges = {
+            "β_CTX_analysis": (0.0, 4.0),
+            "P1NP_analysis": (10.0, 90.0),
+            "VD_analysis": (0.0, 100.0),
+            "N_MID_analysis": (0.0, 200.0),
+            "PTH_analysis": (0.0, 100.0),
+            "CT_analysis": (0.0, 40.0),
+            "Bone_analysis": (-5.0, 5.0),
+        }
         self.β_CTX.name = "β-胶原特殊序列(β-ctx)"
         self.β_CTX.unit = "ng/ml"
+        self.β_CTX.reference_value_range_min, self.β_CTX.reference_value_range_max = all_ranges["β_CTX_analysis"]
+        self.β_CTX.standard_value_range_min, self.β_CTX.standard_value_range_max = all_ranges["β_CTX_analysis"]
         self.P1NP.name = "总I型胶原氨基端延长肽(P1NP)"
         self.P1NP.unit = "μg/ml"
+        self.P1NP.reference_value_range_min, self.P1NP.reference_value_range_max = all_ranges["P1NP_analysis"]
+        self.P1NP.standard_value_range_min, self.P1NP.standard_value_range_max = all_ranges["P1NP_analysis"]
         self.VD.name = "25-羟基维生素D(VD)"
         self.VD.unit = "ng/ml"
+        self.VD.reference_value_range_min, self.VD.reference_value_range_max = all_ranges["VD_analysis"]
+        self.VD.standard_value_range_min, self.VD.standard_value_range_max = all_ranges["VD_analysis"]
         self.N_MID.name = "N端中段骨钙素(N-MID)"
         self.N_MID.unit = "ng/ml"
+        self.N_MID.reference_value_range_min, self.N_MID.reference_value_range_max = all_ranges["N_MID_analysis"]
+        self.N_MID.standard_value_range_min, self.N_MID.standard_value_range_max = all_ranges["N_MID_analysis"]
         self.PTH.name = "甲状旁腺激素(PTH)"
         self.PTH.unit = "ng/ml"
+        self.PTH.reference_value_range_min, self.PTH.reference_value_range_max = all_ranges["PTH_analysis"]
+        self.PTH.standard_value_range_min, self.PTH.standard_value_range_max = all_ranges["PTH_analysis"]
         self.CT.name = "降钙素(CT)"
         self.CT.unit = "pg/ml"
+        self.CT.reference_value_range_min, self.CT.reference_value_range_max = all_ranges["CT_analysis"]
+        self.CT.standard_value_range_min, self.CT.standard_value_range_max = all_ranges["CT_analysis"]
         self.bone_density.name = "骨密度T值"
         self.bone_density.unit = ""
+        self.bone_density.reference_value_range_min, self.bone_density.reference_value_range_max = all_ranges["Bone_analysis"]
+        self.bone_density.standard_value_range_min, self.bone_density.standard_value_range_max = all_ranges["Bone_analysis"]
 
     def patient_indicators_log(self):
         info = f"""
@@ -72,11 +95,14 @@ class IndicatorsAnalysis:
 
     def compute_β_CTX(self):
         """计算 β-CTX 的区间和解读"""
+        # 正常区间
+        self.β_CTX.standard_value_range_min, self.β_CTX.standard_value_range_max = 0.3, 2.0
         self.β_CTX.interpretation = "β-CTX指标反映骨吸收活性。"
         if self.β_CTX.value < 0.2:
             self.β_CTX.range = "低"
             self.β_CTX.result = "低动力型"
             self.β_CTX.reference_value_range = f"β < 0.2{self.β_CTX.unit}"
+            self.β_CTX.reference_value_range_min, self.β_CTX.reference_value_range_max = 0, 0.2
             self.β_CTX.interpretation += (
                 f"当前指标处于低区间：{self.β_CTX.reference_value_range}。"
                 f"骨吸收显著降低，破骨细胞活性不足，若骨密度 (T值) 低于-2.5，则为低动力型骨质疏松。常见于老年人、长期卧床或服用特定药物（如糖皮质激素）的患者。需要促进骨形成，而非抑制骨吸收。"
@@ -86,6 +112,7 @@ class IndicatorsAnalysis:
         elif 0.2 <= self.β_CTX.value < 0.3:
             self.β_CTX.range = "中偏低"
             self.β_CTX.result = "中低型"
+            self.β_CTX.reference_value_range_min, self.β_CTX.reference_value_range_max = 0.2, 0.3
             self.β_CTX.reference_value_range = f"0.2 < β < 0.3{self.β_CTX.unit}"
             self.β_CTX.interpretation += f"当前指标处于{'男性' if self.is_male else '女性'}的中低区间：{self.β_CTX.reference_value_range}。" \
                                          f"骨吸收略有活跃，但仍处于低水平，骨质流失较缓慢。若骨密度 (T值) 低于-2.5，则为早期骨质疏松，需要进行基础干预和补充治疗。"
@@ -111,6 +138,7 @@ class IndicatorsAnalysis:
                 self.β_CTX.range = "中"
                 self.β_CTX.result = "中高动力型"
                 self.β_CTX.reference_value_range = f"0.3 < β < {threshold_value}{self.β_CTX.unit}"
+                self.β_CTX.reference_value_range_min, self.β_CTX.reference_value_range_max = 0.3, threshold_value
                 if self.is_male:
                     self.β_CTX.interpretation += f"当前指标处于{self.β_CTX.reference_age_range}男性的中区间：{self.β_CTX.reference_value_range}。" \
                                                  f"骨吸收活性增强，若骨密度 (T值) 低于-2.5，则为中高动力型骨质疏松；" \
@@ -124,6 +152,7 @@ class IndicatorsAnalysis:
             elif threshold_value <= self.β_CTX.value < 2.0:
                 self.β_CTX.range = "中偏高"
                 self.β_CTX.result = "高动力型（原发性）"
+                self.β_CTX.reference_value_range_min, self.β_CTX.reference_value_range_max = threshold_value, 2.0
                 self.β_CTX.reference_value_range = f"{threshold_value} < β < 2.0{self.β_CTX.unit}"
                 if self.is_male:
                     self.β_CTX.interpretation += f"当前指标处于{self.β_CTX.reference_age_range}男性的中高区间：{self.β_CTX.reference_value_range}。" \
@@ -138,6 +167,7 @@ class IndicatorsAnalysis:
             self.β_CTX.result = "高动力型（继发性）"
             self.β_CTX.is_abnormal = True  # 标记为异常
             self.β_CTX.reference_value_range = f"β ≥ 2.0{self.β_CTX.unit}（约两倍参考值）"
+            self.β_CTX.reference_value_range_min = 2.0
             self.β_CTX.interpretation += f"当前指标处于高区间：{self.β_CTX.reference_value_range}。" \
                                          f"骨吸收极为活跃，属于高动力型（继发性）骨质疏松，通常由 继发性病因（如甲状旁腺功能亢进）导致，病因明确的情况下，应先解决基础问题，再进行骨质疏松治疗。"
             self.β_CTX.medication_suggestion = "抗骨治疗：双膦酸盐、地舒单抗"
@@ -148,6 +178,9 @@ class IndicatorsAnalysis:
     def compute_P1NP(self):
         """计算 P1NP 的区间和解读"""
         self.P1NP.interpretation = "P1NP指标是骨形成标志物，反映成骨细胞活性。"
+
+        # 正常区间
+        self.P1NP.standard_value_range_min, self.P1NP.standard_value_range_max = 22.59, 75.17
 
         threshold_low = 14.56
         threshold_high = 59.62
@@ -162,6 +195,7 @@ class IndicatorsAnalysis:
             self.P1NP.result = "低动力型"
             self.P1NP.is_abnormal = True  # 标记为异常
             self.P1NP.reference_value_range = f"P1NP < {threshold_low}{self.P1NP.unit}"
+            self.P1NP.reference_value_range_max = threshold_low
             self.P1NP.interpretation += f"当前指标处于{'男性' if self.is_male else '女性'}的低区间：{self.β_CTX.reference_value_range}。" \
                                         f"提示骨形成能力下降，若骨密度 (T值) 低于-2.5，则为低动力型骨质疏松。成骨细胞活性不足，骨代谢失衡，易导致骨量丢失和脆性骨折。" \
                                         f"常见于老年患者、长期使用糖皮质激素或其他影响骨形成的慢性疾病。"
@@ -169,6 +203,7 @@ class IndicatorsAnalysis:
         elif threshold_low <= self.P1NP.value < threshold_high:
             self.P1NP.range = "中"
             self.P1NP.reference_value_range = f"{threshold_low} <= P1NP < {threshold_high}{self.P1NP.unit}"
+            self.P1NP.reference_value_range_min, self.P1NP.reference_value_range_max = threshold_low, threshold_high
             self.P1NP.interpretation += f"当前指标处于{'男性' if self.is_male else '女性'}的正常区间：{self.β_CTX.reference_value_range}。" \
                                         f"说明骨吸收与骨形成处于平衡状态，无明显骨代谢异常。正常骨代谢患者无需特殊治疗，但若存在骨密度下降趋势或骨折风险，则需采取预防措施。"
             self.P1NP.result = "正常"
@@ -177,6 +212,7 @@ class IndicatorsAnalysis:
             self.P1NP.result = "重度骨量流失"
             self.P1NP.is_abnormal = True  # 标记为异常
             self.P1NP.reference_value_range = f"P1NP >= {threshold_high}{self.P1NP.unit}（参考值范围浮动）"
+            self.P1NP.reference_value_range_min = threshold_high
             self.P1NP.interpretation += f"当前指标处于{'男性' if self.is_male else '女性'}的高区间：{self.β_CTX.reference_value_range}。" \
                                         f"骨形成活跃，但常伴随骨吸收增加，提示高转换状态、重度骨量流失。" \
                                         f"需综合评估 β-CTX 和 PTH指标，明确是否存在继发性骨质疏松。"
@@ -187,21 +223,26 @@ class IndicatorsAnalysis:
 
     def compute_VD(self):
         """计算 25-羟基维生素D 的区间和解读"""
+        # 正常区间
+        self.VD.standard_value_range_min, self.VD.standard_value_range_max = 20, 30
         if self.VD.value < 20:
             self.VD.range = "严重不足"
             self.VD.is_abnormal = True  # 标记为异常
             self.VD.reference_value_range = f"VD < 20{self.VD.unit}"
+            self.VD.reference_value_range_max = 20
             self.VD.result = "维生素D缺乏"
             self.VD.interpretation += f"维生素D严重不足，可能导致钙吸收降低，引发骨质疏松、骨软化甚至低钙血症。" \
                                         f"老年人、孕妇、长期日照不足者或肝肾功能不全患者常见。需快速补充维生素D，避免进一步骨质流失或并发症。"
         elif 20 <= self.VD.value < 30:
             self.VD.range = "低"
             self.VD.reference_value_range = f"20 ≤ VD < 30{self.VD.unit}"
+            self.VD.reference_value_range_min, self.VD.reference_value_range_max = 20, 30
             self.VD.result = "维生素D不足"
             self.VD.interpretation += f"维生素D水平低于理想范围，但尚未导致严重代谢紊乱。钙吸收率下降，可能存在轻度骨质减少，长期维持此状态会增加骨质疏松风险。"
         else:
             self.VD.range = "正常"
             self.VD.reference_value_range = f"VD ≥ 30{self.VD.unit}"
+            self.VD.reference_value_range_min = 30
             self.VD.result = "维生素D充足"
             self.VD.interpretation += f"维生素D水平在理想范围内，钙吸收效率高，骨代谢处于正常状态。"
 
@@ -219,25 +260,33 @@ class IndicatorsAnalysis:
             # 参考范围为 22-69
             self.N_MID.reference_age_range = "18~29岁"
             self.N_MID.reference_value_range = "22 < N-MID < 69ng/ml"
+            # 正常区间
+            self.N_MID.standard_value_range_min, self.N_MID.standard_value_range_max = 14.8, 64.5
         elif 29 < self.age <= 50:
             # 参考范围为 15-41
             threshold_low = 22
             threshold_high = 69
             self.N_MID.reference_age_range = "30~50岁"
             self.N_MID.reference_value_range = "15 < N-MID < 41ng/ml"
+            # 正常区间
+            self.N_MID.standard_value_range_min, self.N_MID.standard_value_range_max = 15, 41
         elif 50 < self.age <= 70:
             # 参考范围为 15-41
             threshold_low = 15
             threshold_high = 46
             self.N_MID.reference_age_range = "51~70岁"
             self.N_MID.reference_value_range = "15 < N-MID < 46ng/ml"
+            # 正常区间
+            self.N_MID.standard_value_range_min, self.N_MID.standard_value_range_max = 15, 46
         else:
             # 老年人
             threshold_low = threshold_high = 13
             self.N_MID.reference_age_range = "70岁以上"
             self.N_MID.reference_value_range = "N-MID  < 13g/ml"
+            self.N_MID.standard_value_range_max = 13
 
         if self.N_MID.value < threshold_low:
+            self.N_MID.reference_value_range_max = threshold_low
             self.N_MID.range = "低"
             if self.has_bone_density:
                 if self.bone_density.value < -2.5:
@@ -258,7 +307,8 @@ class IndicatorsAnalysis:
                                             f"为{self.N_MID.reference_value_range}; 当前N-MID数值低于区间。" \
                                             f"建议进一步评估骨密度情况，结合骨密度T值综合判断。"
 
-        elif threshold_low <= self.N_MID.value <= threshold_low * 2:
+        elif threshold_low <= self.N_MID.value <= threshold_high * 2:
+            self.N_MID.standard_value_range_min, self.N_MID.standard_value_range_max = threshold_low, threshold_high * 2
             self.N_MID.range = "正常"
             if self.has_bone_density:
                 if self.bone_density.value < -2.5:
@@ -266,16 +316,16 @@ class IndicatorsAnalysis:
                     self.N_MID.result = "低动力型骨质疏松"
                     self.N_MID.interpretation = f"对于{self.N_MID.reference_age_range}年龄群体的N-MID参考范围" \
                                                 f"为{self.N_MID.reference_value_range}; " \
-                                                f"{'当前N-MID数值正常' if self.N_MID.value <= threshold_low else '当前N-MID数值偏高'}。" \
+                                                f"{'当前N-MID数值正常' if self.N_MID.value <= threshold_high else '当前N-MID数值偏高'}。" \
                                                 f"结合骨密度 (T值) 低于-2.5，推测为原发性骨质疏松，需重点促进骨形成。需关注骨质疏松风险。"
                 else:
                     self.N_MID.result = "正常"
                     self.N_MID.interpretation = f"对于{self.N_MID.reference_age_range}年龄群体的N-MID参考范围" \
                                                 f"为{self.N_MID.reference_value_range}; " \
-                                                f"{'当前N-MID数值正常' if self.N_MID.value <= threshold_low else '当前N-MID数值偏高'}。" \
+                                                f"{'当前N-MID数值正常' if self.N_MID.value <= threshold_high else '当前N-MID数值偏高'}。" \
                                                 f"结合骨密度 (T值) 正常，说明骨代谢处于平衡状态，无明显骨代谢异常。"
             else:
-                if self.N_MID.value <= threshold_low:
+                if self.N_MID.value <= threshold_high:
                     self.N_MID.result = "正常"
                     self.N_MID.interpretation = f"对于{self.N_MID.reference_age_range}年龄群体的N-MID参考范围" \
                                                 f"为{self.N_MID.reference_value_range}; " \
@@ -290,6 +340,7 @@ class IndicatorsAnalysis:
                                                 f"可能提示骨代谢活跃状态，建议结合骨密度T值和临床表现进一步评估。尤其需关注是否存在骨吸收增加导致的骨量减少风险。"
 
         else:
+            self.N_MID.standard_value_range_min = threshold_high * 2
             self.N_MID.is_abnormal = True  # 标记为异常
             self.N_MID.range = "高"
             self.N_MID.result = "继发性骨质疏松"
@@ -301,9 +352,12 @@ class IndicatorsAnalysis:
 
     def compute_PTH(self):
         """计算 PTH 的区间和解读"""
+        # 正常区间
+        self.PTH.standard_value_range_min, self.PTH.standard_value_range_max = 14.8, 64.5
         if self.PTH.value < 14.8:
             self.PTH.range = "低"
             self.PTH.reference_value_range = f"PTH < 14.8{self.VD.unit}"
+            self.PTH.reference_value_range_max = 14.8
             self.PTH.is_abnormal = True  # 标记为异常
             if self.has_bone_density:
                 if self.bone_density.value < -2.5:
@@ -325,6 +379,7 @@ class IndicatorsAnalysis:
         elif 14.8 <= self.PTH.value <= 64.5:
             self.PTH.range = "正常"
             self.PTH.reference_value_range = f"14.8 ≤ PTH ≤ 64.5{self.VD.unit}"
+            self.PTH.reference_value_range_min, self.PTH.reference_value_range_max = 14.8, 64.5
             if self.has_bone_density:
                 if self.bone_density.value < -2.5:
                     self.PTH.is_abnormal = True  # 标记为异常
@@ -346,6 +401,7 @@ class IndicatorsAnalysis:
             self.PTH.range = "偏高"
             self.PTH.is_abnormal = True  # 标记为异常
             self.PTH.reference_value_range = f"PTH > 64.5{self.VD.unit}"
+            self.PTH.reference_value_range_min = 64.5
             if self.has_bone_density:
                 if self.bone_density.value < -2.5:
                     self.PTH.result = "甲旁亢引起的骨质疏松症"
@@ -374,10 +430,13 @@ class IndicatorsAnalysis:
             threshold_value = 9.72
         else:
             pass
+        # 正常区间
+        self.CT.standard_value_range_max = threshold_value
 
         if self.CT.value < threshold_value:
             self.CT.range = "正常"
             self.CT.reference_value_range = f"CT ≤ {9.72 if self.is_male else 6.26}{self.VD.unit}"
+            self.CT.reference_value_range_max = threshold_value
             self.CT.result = "正常"
             self.CT.interpretation = f"{'男性' if self.is_male else '女性'}正常区间为CT值 ≤ {threshold_value}pg/ml，" \
                                       f"当前指标正常。提示骨代谢活动无明显异常，患者的骨吸收状态良好。" \
@@ -386,6 +445,7 @@ class IndicatorsAnalysis:
             self.CT.is_abnormal = True  # 标记为异常
             self.CT.range = "偏高"
             self.CT.reference_value_range = f"CT ≥ {9.72 if self.is_male else 6.26}{self.VD.unit}"
+            self.bone_density.reference_value_range_min = threshold_value
             self.CT.result = "提示甲状腺髓样瘤"
             self.CT.interpretation = f"{'男性' if self.is_male else '女性'}正常区间为CT值 ≤ {threshold_value}pg/ml，" \
                                       f"当前指标显著偏高，（尤其是CT值升高超过参考值上限的两倍以上），需结合患者病史、影像学检查和甲状腺功能评估，" \
@@ -396,10 +456,13 @@ class IndicatorsAnalysis:
     def compute_bone_density(self):
         """计算骨密度"""
         self.bone_density.interpretation = "骨密度（T值）是骨量的重要指标，用于评估骨质疏松风险。"
+        # 正常区间
+        self.bone_density.standard_value_range_min, self.bone_density.standard_value_range_max = -1.0, 1.0
 
         if self.bone_density.value >= -1.0:
             self.bone_density.range = "正常"
             self.bone_density.reference_value_range = f"T值 ≥ -1.0"
+            self.bone_density.reference_value_range_min = -1.0
             self.bone_density.result = "骨密度正常"
             self.bone_density.interpretation += (
                 f"当前骨密度T值为{self.bone_density.value}，处于正常范围：{self.CT.reference_value_range}。"
@@ -408,6 +471,7 @@ class IndicatorsAnalysis:
         elif -2.5 < self.bone_density.value < -1.0:
             self.bone_density.range = "偏低"
             self.bone_density.reference_value_range = f"-2.5 < T值 < -1.0"
+            self.bone_density.reference_value_range_min, self.bone_density.reference_value_range_max = -2.5, -1.0
             self.bone_density.result = "骨量减少"
             self.bone_density.interpretation += (
                 f"当前骨密度T值为{self.bone_density.value}，处于骨量减少范围：{self.CT.reference_value_range}。"
@@ -418,6 +482,7 @@ class IndicatorsAnalysis:
             self.bone_density.is_abnormal = True  # 标记为异常
             self.bone_density.range = "过低"
             self.bone_density.reference_value_range = f"T值 ≤ -2.5"
+            self.bone_density.reference_value_range_max = -2.5
             self.bone_density.result = "骨质疏松"
             self.bone_density.interpretation += (
                 f"当前骨密度T值为{self.bone_density.value}，低于骨质疏松诊断标准：{self.CT.reference_value_range}。"
