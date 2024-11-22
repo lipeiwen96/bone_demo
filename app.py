@@ -3,11 +3,13 @@ import json
 from ai_analysis import ai_analysis
 import matplotlib.pyplot as plt
 from matplotlib import rcParams
+from matplotlib import font_manager as fm
 
 # 设置字体路径，根目录下
-font_path = "/SimHei.ttf"
-# 配置 Matplotlib 使用该字体
-rcParams['font.sans-serif'] = [font_path]  # 加载字体路径
+font_path = "SimHei.ttf"
+font_prop = fm.FontProperties(fname=font_path)
+# 应用字体设置
+rcParams['font.sans-serif'] = [font_prop.get_name()]
 rcParams['axes.unicode_minus'] = False  # 解决负号显示问题
 
 
