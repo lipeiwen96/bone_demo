@@ -6,12 +6,40 @@ from ai_analysis import ai_analysis
 import matplotlib.pyplot as plt
 from matplotlib import rcParams
 from matplotlib import font_manager as fm
+import requests
 
-# 设置字体路径，根目录下
-font_path = os.path.abspath(os.path.join("fonts", "SimHei.ttf"))
-# 应用字体设置
+
+def setup_font():
+    font_dir = "/usr/share/fonts/custom"
+    font_file = "SimHei.ttf"
+    font_url = "https://github.com/vinta/pangu/raw/master/tests/fonts/SimHei.ttf"
+
+    # 创建字体目录
+    if not os.path.exists(font_dir):
+        print(f"创建字体目录: {font_dir}")
+        os.makedirs(font_dir)
+
+    # 下载字体文件
+    font_path = os.path.join(font_dir, font_file)
+    if not os.path.exists(font_path):
+        print("下载 SimHei.ttf 字体文件...")
+        response = requests.get(font_url)
+        with open(font_path, "wb") as f:
+            f.write(response.content)
+        print("字体文件下载完成！")
+    else:
+        print("字体文件已存在！")
+
+    # 更新字体缓存
+    os.system("fc-cache -fv")
+    return font_path
+
+# 调用字体安装
+font_path = setup_font()
+
+# 配置 Matplotlib
 rcParams['font.sans-serif'] = [font_path]
-rcParams['axes.unicode_minus'] = False  # 解决负号显示问题
+rcParams['axes.unicode_minus'] = False
 
 # # 设置字体路径，根目录下
 # font_path = "/SimHei.ttf"
